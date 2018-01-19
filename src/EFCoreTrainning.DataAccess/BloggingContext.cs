@@ -3,15 +3,28 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EFCoreTrainning.DataAccess
 {
-	internal class BloggingContext : DbContext 
+	internal class BloggingContext : DbContext, IBloggingContext
 	{
-		public DbSet<Blog> Blogs { get; set; }
-		public DbSet<Post> Posts { get; set; }
+		public BloggingContext()
+		{ }
+		
+		public BloggingContext(DbContextOptions options)
+			: base(options)
+		{ }
 
+		public virtual DbSet<Blog> Blogs { get; set; }
+		public virtual DbSet<Post> Posts { get; set; }
+
+
+		
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
-			optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=EFCoreTest;Trusted_Connection=True;");
+			if (!optionsBuilder.IsConfigured)
+			{
+				optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=EFCoreTest;Trusted_Connection=True;");
+			}
+			optionsBuilder.EnableSensitiveDataLogging();
 		}
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
